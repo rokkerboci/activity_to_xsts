@@ -1,0 +1,14 @@
+package some_package
+
+import "some_other_package"
+
+activity OneActivity {
+    initial InitialNode
+
+    activity A1
+
+    final FinalNode
+
+    channel from InitialNode to A1
+    channel from A1 to FinalNode
+}

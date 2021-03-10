@@ -1,0 +1,45 @@
+package some_package
+
+import "some_other_package"
+
+activity Activity1 (
+    in p1 : integer
+    out p5 : integer
+) {
+    initial InitialNode
+
+    activity A1 (
+        in p6 : integer
+        out p2 : integer
+    )
+    activity A2 (
+        in p3 : integer
+        out p4 : integer
+    )
+    activity A3
+
+    final FinalNode
+
+    channel from InitialNode to A1
+    channel from this.p1 to A1.p6
+    channel from A1.p3 to A2.p3
+    channel from A1 to A3
+    channel from A2.p4 to this.p5
+    channel from A2 to FinalNode
+    channel from A3 to FinalNode
+}
+
+activity RootActivity {
+    initial InitialNode
+
+    activity A1 (out p1 : integer)
+    activity Activity1 ref Activity1
+    activity A2 (in p2 : integer)
+
+    final FinalNode
+
+    channel from InitialNode to A1
+    channel from A1.p1 to Activity1.p1
+    channel from Activity1.p5 to A2.p2
+    channel from A2 to FinalNode
+}

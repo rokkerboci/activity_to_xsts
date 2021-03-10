@@ -1,0 +1,14 @@
+package some_package
+
+import "some_other_package"
+
+activity Signal {
+    initial InitialNode
+
+    signal S1 value 2 to port1
+
+    final FinalNode
+
+    channel from InitialNode to S1
+    channel from S1 to FinalNode
+}

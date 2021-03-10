@@ -1,0 +1,24 @@
+package some_package
+
+import "some_other_package"
+
+activity Branch {
+    var x : boolean
+
+    initial InitialNode
+
+    activity A1
+    activity A2
+
+    decision DecisionNode
+    merge MergeNode
+
+    final FinalNode
+
+    channel from InitialNode to DecisionNode
+    channel from DecisionNode to A1 [x]
+    channel from DecisionNode to A2 [else]
+    channel from A1 to MergeNode
+    channel from A2 to MergeNode
+    channel from MergeNode to FinalNode
+}

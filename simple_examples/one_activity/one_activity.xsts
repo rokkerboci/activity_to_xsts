@@ -1,0 +1,43 @@
+type RendezvousChannelState : { Empty, Full }
+type ActivityNodeState : { Idle, Running }
+
+var OneActivity_InitialNode_node_state : ActivityNodeState = Idle
+var OneActivity_A1_node_state : ActivityNodeState = Idle
+var OneActivity_FinalNode_node_state : ActivityNodeState = Idle
+
+var OneActivity_InitialNode_to_OneActivity_A1_channel_state : RendezvousChannelState = Empty
+var OneActivity_A1_to_OneActivity_FinalNode_channel_state : RendezvousChannelState = Empty
+
+tran {
+    assume OneActivity_InitialNode_node_state == Running
+    assume OneActivity_InitialNode_to_OneActivity_A1_channel_state == Empty
+
+    OneActivity_InitialNode_node_state := Idle
+    OneActivity_InitialNode_to_OneActivity_A1_channel_state := Full
+} or {
+    assume OneActivity_InitialNode_to_OneActivity_A1_channel_state == Full
+    assume OneActivity_A1_node_state == Idle
+
+    OneActivity_InitialNode_to_OneActivity_A1_channel_state := Empty
+    OneActivity_A1_node_state := Running
+} or {
+    assume OneActivity_A1_node_state == Running
+    assume OneActivity_A1_to_OneActivity_FinalNode_channel_state == Empty
+
+    OneActivity_A1_node_state := Idle
+    OneActivity_A1_to_OneActivity_FinalNode_channel_state := Full
+} or {
+    assume OneActivity_A1_to_OneActivity_FinalNode_channel_state == Full
+    assume OneActivity_FinalNode_node_state == Idle
+
+    OneActivity_InitialNode_to_OneActivity_A1_channel_state := Empty
+    OneActivity_A1_node_state := Running
+}
+
+init {
+    OneActivity_InitialNode_node_state := Running
+}
+
+env {
+
+}

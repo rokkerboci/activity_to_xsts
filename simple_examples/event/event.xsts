@@ -1,0 +1,50 @@
+type RendezvousChannelState : { Empty, Full }
+type ActivityNodeState : { Idle, Running }
+
+var Event_InitialNode_node_state : ActivityNodeState = Idle
+var Event_E1_node_state : ActivityNodeState = Idle
+var Event_FinalNode_node_state : ActivityNodeState = Idle
+
+var Event_InitialNode_to_Event_E1_channel_state : RendezvousChannelState = Empty
+var Event_E1_to_Event_FinalNode_channel_state : RendezvousChannelState = Empty
+
+var Event_E1_receive_signal : boolean = False
+
+tran {
+    assume Event_InitialNode_node_state == Running
+    assume Event_InitialNode_to_Event_E1_channel_state == Empty
+
+    Event_InitialNode_node_state := Idle
+    Event_InitialNode_to_Event_E1_channel_state := Full
+} or {
+    assume Event_InitialNode_to_Event_E1_channel_state == Full
+    assume Event_E1_node_state == Idle
+
+    Event_InitialNode_to_Event_E1_channel_state := Empty
+    Event_E1_node_state := Running
+} or {
+    assume Event_E1_node_state == Running
+    assume Event_E1_receive_signal
+    assume Event_E1_to_Event_FinalNode_channel_state == Empty
+
+    Event_E1_node_state := Idle
+    Event_E1_to_Event_FinalNode_channel_state := Full
+} or {
+    assume Event_E1_to_Event_FinalNode_channel_state == Full
+    assume Event_FinalNode_node_state == Idle
+
+    Event_E1_to_Event_FinalNode_channel_state := Empty
+    Event_FinalNode_node_state := Running
+}
+
+init {
+    Event_InitialNode_node_state := Running
+}
+
+env {
+    choice {
+        Event_E1_receive_signal := False
+    } or {
+        Event_E1_receive_signal := True
+    }
+}

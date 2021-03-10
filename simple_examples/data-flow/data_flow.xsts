@@ -1,0 +1,57 @@
+type RendezvousChannelState : { Empty, Full }
+type ActivityNodeState : { Idle, Running }
+
+var DataFlow_InitialNode_node_state : ActivityNodeState = Idle
+var DataFlow_A1_node_state : ActivityNodeState = Idle
+var DataFlow_A2_node_state : ActivityNodeState = Idle
+var DataFlow_FinalNode_node_state : ActivityNodeState = Idle
+
+var DataFlow_InitialNode_to_DataFlow_A1_channel_state : RendezvousChannelState = Empty
+var DataFlow_A1_p1_to_DataFlow_A2_p2_channel_state : RendezvousChannelState = Empty
+var DataFlow_A2_to_DataFlow_FinalNode_channel_state : RendezvousChannelState = Empty
+
+tran {
+    assume DataFlow_InitialNode_node_state == Running
+    assume DataFlow_InitialNode_to_DataFlow_A1_channel_state == Empty
+
+    DataFlow_InitialNode_node_state := Idle
+    DataFlow_InitialNode_to_DataFlow_A1_channel_state := Full
+} or {
+    assume DataFlow_InitialNode_to_DataFlow_A1_channel_state == Full
+    assume DataFlow_A1_node_state == Idle
+
+    DataFlow_InitialNode_to_DataFlow_A1_channel_state := Empty
+    DataFlow_A1_node_state := Running
+} or {
+    assume DataFlow_A1_node_state == Running
+    assume DataFlow_A1_p1_to_DataFlow_A2_p2_channel_state == Empty
+
+    DataFlow_A1_node_state := Idle
+    DataFlow_A1_p1_to_DataFlow_A2_p2_channel_state := Full
+} or {
+    assume DataFlow_A1_p1_to_DataFlow_A2_p2_channel_state == Full
+    assume DataFlow_A2_node_state == Idle
+
+    DataFlow_A1_p1_to_DataFlow_A2_p2_channel_state := Empty
+    DataFlow_A2_node_state := Running
+} or {
+    assume DataFlow_A2_node_state == Running
+    assume DataFlow_A2_to_DataFlow_FinalNode_channel_state == Empty
+
+    DataFlow_A2_node_state := Idle
+    DataFlow_A2_to_DataFlow_FinalNode_channel_state := Full
+} or {
+    assume DataFlow_A2_to_DataFlow_FinalNode_channel_state == Full
+    assume DataFlow_FinalNode_node_state == Idle
+
+    DataFlow_A2_to_DataFlow_FinalNode_channel_state := Empty
+    DataFlow_FinalNode_node_state := Running
+}
+
+init {
+    DataFlow_InitialNode_node_state := Running
+}
+
+env {
+
+}

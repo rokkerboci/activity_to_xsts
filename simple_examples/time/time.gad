@@ -1,0 +1,14 @@
+package some_package
+
+import "some_other_package"
+
+activity Time {
+    initial InitialNode
+
+    time T1 after 1s
+
+    final FinalNode
+
+    channel from InitialNode to T1
+    channel from T1 to FinalNode
+}

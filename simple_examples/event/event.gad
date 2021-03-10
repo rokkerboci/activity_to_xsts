@@ -1,0 +1,14 @@
+package some_package
+
+import "some_other_package"
+
+activity Event {
+    initial InitialNode
+
+    event E1 from port1
+
+    final FinalNode
+
+    channel from InitialNode to E1
+    channel from E1 to FinalNode
+}

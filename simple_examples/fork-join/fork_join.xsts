@@ -1,0 +1,90 @@
+type RendezvousChannelState : { Empty, Full }
+type ActivityNodeState : { Idle, Running }
+
+var ForkJoin_InitialNode_node_state : ActivityNodeState = Idle
+var ForkJoin_Fork_node_state : ActivityNodeState = Idle
+var ForkJoin_A1_node_state : ActivityNodeState = Idle
+var ForkJoin_A2_node_state : ActivityNodeState = Idle
+var ForkJoin_Join_node_state : ActivityNodeState = Idle
+var ForkJoin_FinalNode_node_state : ActivityNodeState = Idle
+
+var ForkJoin_InitialNode_to_ForkJoin_Fork_channel_state : RendezvousChannelState = Empty
+var ForkJoin_Fork_to_ForkJoin_A1_channel_state : RendezvousChannelState = Empty
+var ForkJoin_Fork_to_ForkJoin_A2_channel_state : RendezvousChannelState = Empty
+var ForkJoin_A1_to_ForkJoin_Join_channel_state : RendezvousChannelState = Empty
+var ForkJoin_A2_to_ForkJoin_Join_channel_state : RendezvousChannelState = Empty
+var ForkJoin_Join_to_ForkJoin_FinalNode_channel_state : RendezvousChannelState = Empty
+
+tran {
+    assume ForkJoin_InitialNode_node_state == Running
+    assume ForkJoin_InitialNode_to_ForkJoin_Fork_channel_state == Empty
+
+    ForkJoin_InitialNode_node_state := Idle
+    ForkJoin_InitialNode_to_ForkJoin_Fork_channel_state := Full
+} or {
+    assume ForkJoin_InitialNode_to_ForkJoin_Fork_channel_state == Full
+    assume ForkJoin_Fork_node_state == Idle
+
+    ForkJoin_InitialNode_to_ForkJoin_Fork_channel_state := Empty
+    ForkJoin_Fork_node_state := Running
+} or {
+    assume ForkJoin_Fork_node_state == Running
+    assume ForkJoin_Fork_to_ForkJoin_A1_channel_state == Empty
+    assume ForkJoin_Fork_to_ForkJoin_A2_channel_state == Empty
+
+    ForkJoin_Fork_node_state := Idle
+    ForkJoin_Fork_to_ForkJoin_A1_channel_state := Full
+    ForkJoin_Fork_to_ForkJoin_A2_channel_state := Full
+} or {
+    assume ForkJoin_Fork_to_ForkJoin_A1_channel_state == Full
+    assume ForkJoin_A1_node_state == Idle
+
+    ForkJoin_Fork_to_ForkJoin_A1_channel_state := Empty
+    ForkJoin_A1_node_state := Running
+} or {
+    assume ForkJoin_Fork_to_ForkJoin_A2_channel_state == Full
+    assume ForkJoin_A2_node_state == Idle
+
+    ForkJoin_Fork_to_ForkJoin_A2_channel_state := Empty
+    ForkJoin_A2_node_state := Running
+} or {
+    assume ForkJoin_A1_node_state == Running
+    assume ForkJoin_A1_to_ForkJoin_Join_channel_state == Empty
+
+    ForkJoin_A1_node_state := Idle
+    ForkJoin_A1_to_ForkJoin_Join_channel_state := Full
+} or {
+    assume ForkJoin_A2_node_state == Running
+    assume ForkJoin_A2_to_ForkJoin_Join_channel_state == Empty
+
+    ForkJoin_A2_node_state := Idle
+    ForkJoin_A2_to_ForkJoin_Join_channel_state := Full
+} or {
+    assume ForkJoin_A1_to_ForkJoin_Join_channel_state == Full
+    assume ForkJoin_A2_to_ForkJoin_Join_channel_state == Full
+    assume ForkJoin_Join_node_state == Idle
+
+    ForkJoin_A1_to_ForkJoin_Join_channel_state := Empty
+    ForkJoin_A2_to_ForkJoin_Join_channel_state := Empty
+    ForkJoin_Join_node_state := Running
+} or {
+    assume ForkJoin_Join_node_state == Running
+    assume ForkJoin_Join_to_ForkJoin_FinalNode_channel_state == Empty
+
+    ForkJoin_Join_node_state := Idle
+    ForkJoin_Join_to_ForkJoin_FinalNode_channel_state := Full
+} or {
+    assume ForkJoin_Join_to_ForkJoin_FinalNode_channel_state == Full
+    assume ForkJoin_FinalNode_node_state == Idle
+
+    ForkJoin_Join_to_ForkJoin_FinalNode_channel_state := Empty
+    ForkJoin_FinalNode_node_state := Running
+}
+
+init {
+    ForkJoin_InitialNode_node_state := Running
+}
+
+env {
+
+}

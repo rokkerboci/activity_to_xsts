@@ -1,0 +1,23 @@
+package some_package
+
+import "some_other_package"
+
+activity ForkJoin {
+    initial InitialNode
+
+    fork Fork
+
+    activity A1
+    activity A2
+
+    join Join
+
+    final FinalNode
+
+    channel from InitialNode to Fork
+    channel from Fork to A1
+    channel from Fork to A2
+    channel from A1 to Join
+    channel from A2 to Join
+    channel from Join to FinalNode
+}

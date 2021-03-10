@@ -1,0 +1,104 @@
+type RendezvousChannelState : { Empty, Full }
+type ActivityNodeState : { Idle, Running }
+
+var Branch_InitialNode_node_state : ActivityNodeState = Idle
+var Branch_A1_node_state : ActivityNodeState = Idle
+var Branch_A2_node_state : ActivityNodeState = Idle
+var Branch_DecisionNode_node_state : ActivityNodeState = Idle
+var Branch_MergeNode_node_state : ActivityNodeState = Idle
+var Branch_FinalNode_node_state : ActivityNodeState = Idle
+
+var Branch_InitialNode_to_Branch_DecisionNode_channel_state : RendezvousChannelState = Empty
+var Branch_DecisionNode_to_Branch_A1_channel_state : RendezvousChannelState = Empty
+var Branch_DecisionNode_to_Branch_A2_channel_state : RendezvousChannelState = Empty
+var Branch_A1_to_Branch_MergeNode_channel_state : RendezvousChannelState = Empty
+var Branch_A2_to_Branch_MergeNode_channel_state : RendezvousChannelState = Empty
+var Branch_MergeNode_to_Branch_FinalNode_channel_state : RendezvousChannelState = Empty
+
+var Branch_x_variable : boolean = False
+
+tran {
+    assume Branch_InitialNode_node_state == Running
+    assume Branch_InitialNode_to_Branch_DecisionNode_channel_state == Empty
+
+    Branch_InitialNode_node_state := Idle
+    Branch_InitialNode_to_Branch_DecisionNode_channel_state := Full
+} or {
+    assume Branch_InitialNode_to_Branch_DecisionNode_channel_state == Full
+    assume Branch_DecisionNode_node_state == Idle
+
+    Branch_InitialNode_to_Branch_DecisionNode_channel_state := Empty
+    Branch_DecisionNode_node_state := Running
+} or {
+    assume Branch_DecisionNode_node_state == Running
+    assume Branch_DecisionNode_to_Branch_A1_channel_state == Empty
+    assume Branch_x_variable
+
+    Branch_DecisionNode_node_state := Idle
+    Branch_DecisionNode_to_Branch_A1_channel_state := Full
+} or {
+    assume Branch_DecisionNode_to_Branch_A1_channel_state == Full
+    assume Branch_A1_node_state == Idle
+
+    Branch_DecisionNode_to_Branch_A1_channel_state := Empty
+    Branch_A1_node_state := Running
+} or {
+    assume Branch_DecisionNode_node_state == Running
+    assume Branch_DecisionNode_to_Branch_A2_channel_state == Empty
+    assume !Branch_x_variable
+
+    Branch_DecisionNode_node_state := Idle
+    Branch_DecisionNode_to_Branch_A2_channel_state := Full
+} or {
+    assume Branch_DecisionNode_to_Branch_A2_channel_state == Full
+    assume Branch_A2_node_state == Idle
+
+    Branch_DecisionNode_to_Branch_A2_channel_state := Empty
+    Branch_A2_node_state := Running
+} or {
+    assume Branch_A1_node_state == Running
+    assume Branch_A1_to_Branch_MergeNode_channel_state == Empty
+
+    Branch_A1_node_state := Idle
+    Branch_A1_to_Branch_MergeNode_channel_state := Full
+} or {
+    assume Branch_A1_to_Branch_MergeNode_channel_state == Full
+    assume Branch_MergeNode_node_state == Idle
+
+    Branch_A1_to_Branch_MergeNode_channel_state := Empty
+    Branch_MergeNode_node_state := Running
+} or {
+    assume Branch_A2_node_state == Running
+    assume Branch_A2_to_Branch_MergeNode_channel_state == Empty
+
+    Branch_A2_node_state := Idle
+    Branch_A2_to_Branch_MergeNode_channel_state := Full
+} or {
+    assume Branch_A2_to_Branch_MergeNode_channel_state == Full
+    assume Branch_MergeNode_node_state == Idle
+
+    Branch_A2_to_Branch_MergeNode_channel_state := Empty
+    Branch_MergeNode_node_state := Running
+} or {
+    assume Branch_MergeNode_node_state == Running
+    assume Branch_MergeNode_to_Branch_FinalNode_channel_state == Empty
+
+    Branch_MergeNode_node_state := Idle
+    Branch_MergeNode_to_Branch_FinalNode_channel_state := Full
+} or {
+    assume Branch_MergeNode_to_Branch_FinalNode_channel_state == Full
+    assume Branch_FinalNode_node_state == Idle
+
+    Branch_MergeNode_to_Branch_FinalNode_channel_state := Empty
+    Branch_FinalNode_node_state := Running
+}
+
+init {
+    Branch_InitialNode_node_state := Running
+}
+
+env { // not sure about this, x shouldn't be non-det ..
+    Branch_x_variable := false
+} or {
+    Branch_x_variable := true
+}
